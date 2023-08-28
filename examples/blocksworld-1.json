@@ -1,0 +1,19 @@
+{
+    "domain": "blocksworld",
+    "representation": "nl-casual",
+    "nshot": 0,
+    "data": [
+        {
+            "initial": ["a", "b", "c", "d"],
+            "goal": ["a,b,c,d"]
+        },
+        {
+            "initial": ["b", "a,c"],
+            "goal": ["a,b,c"]
+        },
+        {
+            "initial": ["a,b,c", "d"],
+            "goal": ["a,b,c,d"]
+        }
+    ]
+}
