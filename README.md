@@ -21,7 +21,7 @@ The currently supported representations are:
 
  
 ### Input Format
-Data is read using the JSON format. Use the `domain`, `representation` and `nshot` properties to control how the data is handled. The `data` property stores a list of the cases to construct the prompts from. The format of the `data` property may be different for different domains. Look in the `examples` folder for the structure of the input filese for each `domain`.
+Data is read using the JSON format. Use the `domain`, `representation` and `nshot` properties to control how the data is handled. The `data` property stores a list of the cases to construct the prompts from. The format of the `data` property may be different for different domains. Look in the `examples` folder for the structure of the input files for each `domain`.
 ```
 {
     "domain": "blocksworld",
