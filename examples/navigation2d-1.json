@@ -1,0 +1,25 @@
+{
+    "domain": "navigation-2d",
+    "representation": "nl-casual",
+    "nshot": 0,
+    "data": [
+        {
+            "size": "5,5",
+            "initial": "0,0",
+            "goal": "4,4",
+            "obstacles": []
+        },
+        {
+            "size": "5,5",
+            "initial": "0,0",
+            "goal": "4,4",
+            "obstacles": ["0,1", "1,1", "2,1", "3,1"]
+        },
+        {
+            "size": "5,5",
+            "initial": "0,0",
+            "goal": "4,4",
+            "obstacles": ["1,3", "2,3", "3,3", "3,4"]
+        }
+    ]
+}

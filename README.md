@@ -7,9 +7,9 @@ It can be run using command line arguments (`python main.py ./examples/blockswor
 
 ### Domains
 The `domain` property changes the type of problem. The currently supported domains are:
-- Blocks world
-- 2D Navigation (Grid world) - *In progress*
-- 3D Navigation  - *In progress*
+- Blocks world (`blocksworld`)
+- 2D Navigation/Grid world (`navigation-2d`) - *In progress*
+- 3D Navigation (`navigation-3d`) - *In progress*
 
 ### Representations
 The `representation` property will change the structure and language of the prompts.

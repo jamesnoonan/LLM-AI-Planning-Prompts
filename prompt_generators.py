@@ -64,11 +64,28 @@ class BlocksWorldGenerator(PromptGenerator):
 
 class Navigation2DGenerator(PromptGenerator):
     def get_domain_text(self):
-        return ""
+        return "You are a robot in a discrete finite grid. You start at a certain position and aim to reach the goal position. However, you can only move one square at a time and you cannot move diagonally. There may be obstacles in your path, which you cannot move onto or over. Coordinates are represented as (x,y)."
     
     def get_problem_text(self, case):
-        return ""
+        grid_size = case.get("size", "2,2").split(',')
+        initial_pos = case.get("initial", "0,0")
+        goal_pos = case.get("goal", "1,1")
+        obstacles = case.get("obstacles", [])
 
+        return f'The grid is {grid_size[0]} wide and {grid_size[1]} tall. You are initially located at ({initial_pos}) and you need to get to ({goal_pos}). {self.get_obstacles(obstacles)}\n Please reply only with the sequence of coordinates that you visit.'
+
+    def get_obstacles(self, obstacles):
+        if (len(obstacles) == 0):
+            return "There are no obstacles."
+        elif (len(obstacles) == 1):
+            return f'There is an obstacle at ({obstacles[0]}).'
+        
+        output = 'There are obstacles at '
+        for i in range(0, len(obstacles) - 1):
+            output += f'({obstacles[i]}), '
+        output += f'and ({obstacles[-1]}).'
+
+        return output
     
     def get_example_text(self, index):
         return ""
