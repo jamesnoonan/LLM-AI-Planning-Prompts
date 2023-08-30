@@ -1,5 +1,8 @@
 # Output
 out/
+generator-out/
+prompt-out/
+llm-out/
 
 
 # Byte-compiled / optimized / DLL files

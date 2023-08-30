@@ -2,7 +2,7 @@ import sys
 import os
 import json
 
-from prompt_generators import BlocksWorldGenerator, Navigation2DGenerator, Navigation3DGenerator
+from domain_generators import BlocksWorldGenerator, Navigation2DGenerator, Navigation3DGenerator
 
 input_filename = None
 output_filename = None
@@ -19,7 +19,7 @@ else:
 if (not bool(input_filename)):
     sys.exit()
 if (not bool(output_filename)):
-    output_filename = "./out/output.json"
+    output_filename = f'./prompt-out/{input_filename.split("/")[-1].split(".")[0]}.json'
 
 # Read the json data from the input file
 with open(input_filename, "r") as input_file:
