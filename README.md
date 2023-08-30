@@ -21,7 +21,7 @@ The currently supported representations are:
 
  
 ### Input Format
-Data is read using the JSON format. Use the `domain`, `representation` and `nshot` properties to control how the data is handled. The `data` property stores a list of the cases to construct the prompts from. The format of the `data` property may be different for different domains.
+Data is read using the JSON format. Use the `domain`, `representation` and `nshot` properties to control how the data is handled. The `data` property stores a list of the cases to construct the prompts from. The format of the `data` property may be different for different domains. Look in the `examples` folder for the structure of the input filese for each `domain`.
 ```
 {
     "domain": "blocksworld",
@@ -56,7 +56,7 @@ OPENAI_API_KEY=<api-secret-key-here>
 ```
 
 ### Usage
-It can be run using command line arguments (`python run_llm.py ./examples/blocksworld-1.json`) or interactively (`python run_llm.py`). When using command line arguments, the program takes up to arguments: the input file and output file (the output file can be omitted and it will be saved to `llm-out` with the same filename as the input).
+The input to `run_llm.py` is designed to match up with the output of `generator.py`. It can be run using command line arguments (`python run_llm.py ./prompt-out/blocksworld-1.json`) or interactively (`python run_llm.py`). When using command line arguments, the program takes up to arguments: the input file and output file (the output file can be omitted and it will be saved to `llm-out` with the same filename as the input). 
 
 ### Models
 Currently all the requests use the model `gpt-3.5-turbo-0613`, however in the future we will support a larger variety of models.
