@@ -1,23 +1,29 @@
 import os
 import sys
-import openai
 import json
-from dotenv import load_dotenv
-
-load_dotenv()
-
-openai.organization = os.getenv("OPENAI_ORG")
-openai.api_key = os.getenv("OPENAI_API_KEY")
+import llm
 
 input_filename = None
 output_filename = None
 
-# Get input and output files
+# Get llm object to get responses from
 if (len(sys.argv) > 1):
-    input_filename = sys.argv[1]
+    if sys.argv[1] == "gpt":
+        model = llm.OpenAILLM()
+    elif sys.argv[1] == "bard":
+        model = llm.BardLLM()
+    else:
+        print("Invalid LLM option")
+        sys.exit()
+
+
+    # Get input and output files
     if (len(sys.argv) > 2):
-        output_filename = sys.argv[2]
+        input_filename = sys.argv[2]
+        if (len(sys.argv) > 3):
+            output_filename = sys.argv[3]
 else:
+    model = llm.OpenAILLM()  # FIXME use LLM specified by user input
     input_filename = input('Input File (JSON): ')
     output_filename = input('Output File (JSON) [optional]: ')
 
@@ -45,10 +51,9 @@ for i in range(len(prompts)):
     print(f'--- Generating {i+1} of {len(prompts)} ---')
     prompt = prompts[i]
 
-    raw_response = openai.ChatCompletion.create(model="gpt-3.5-turbo-0613", messages=[{"role":"user", "content": prompt}])
-
-    response = raw_response['choices'][0]['message']['content']
-    tokens_used += raw_response['usage']['total_tokens']
+    response = model.get_response(prompt)
+    if model.has_tokens:
+        tokens_used += model.get_tokens()
 
     output_data.append({'prompt': prompt, 'response': response})
 
