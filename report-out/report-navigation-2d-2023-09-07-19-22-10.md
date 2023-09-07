@@ -1,13 +1,13 @@
 # LLM Planning Report
 
-> Generated at 19:20:20 on 07/09/2023
+> Generated at 19:22:10 on 07/09/2023
 
 - **Domain**: navigation-2d
 - **Representation**: nl-casual
 - **Examples Given to LLM**: 0 examples
 - **Count**: 3 test cases
 
-## Test Case 0
+## Test Case 1
 
 ### Prompt
 
@@ -16,15 +16,15 @@ The grid is 5 wide and 5 tall. You are initially located at (0,0) and you need t
  Please reply only with the sequence of coordinates that you visit.
 
     
-![Navigation task visualisation](./images/case0-2023-09-07-19-20-20.png)
+![Navigation task visualisation](./images/case0-2023-09-07-19-22-10.png)
 
 ### Response
 
-The sequence of coordinates that you visit to reach the goal position (4,4) without any obstacles is as follows:
+The sequence of coordinates you visit to reach the goal position (4,4) without any obstacles would be:
 
 (0,0) -> (0,1) -> (0,2) -> (0,3) -> (0,4) -> (1,4) -> (2,4) -> (3,4) -> (4,4)
 
-## Test Case 1
+## Test Case 2
 
 ### Prompt
 
@@ -33,15 +33,13 @@ The grid is 5 wide and 5 tall. You are initially located at (0,0) and you need t
  Please reply only with the sequence of coordinates that you visit.
 
     
-![Navigation task visualisation](./images/case1-2023-09-07-19-20-20.png)
+![Navigation task visualisation](./images/case1-2023-09-07-19-22-10.png)
 
 ### Response
 
-The sequence of coordinates that you visit to reach the goal position (4,4) without touching the obstacles is as follows:
+(0,0) -> (0,2) -> (0,3) -> (0,4) -> (1,4) -> (2,4) -> (3,4) -> (4,4)
 
-(0,0) -> (1,0) -> (1,2) -> (2,2) -> (3,0) -> (3,2) -> (4,2) -> (4,3) -> (4,4)
-
-## Test Case 2
+## Test Case 3
 
 ### Prompt
 
@@ -50,11 +48,9 @@ The grid is 5 wide and 5 tall. You are initially located at (0,0) and you need t
  Please reply only with the sequence of coordinates that you visit.
 
     
-![Navigation task visualisation](./images/case2-2023-09-07-19-20-20.png)
+![Navigation task visualisation](./images/case2-2023-09-07-19-22-10.png)
 
 ### Response
 
-The sequence of coordinates that you visit to reach the goal position, avoiding the obstacles, would be:
-
-(0,0), (0,1), (0,2), (0,3), (0,4), (1,4), (2,4), (3,2), (4,2), (4,3), (4,4)
+(0,1) (0,2) (0,3) (0,4) (1,4) (2,4) (3,4) (4,4)
 

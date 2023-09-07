@@ -57,7 +57,7 @@ def generate_result_md(folder, index, case, prompt, response):
 
     generate_image(cells, initial_pos, goal_pos, obstacles, f'{folder}/images/{image_filename}')
 
-    return f"""## Test Case {index}
+    return f"""## Test Case {index+1}
 
 ### Prompt
 
