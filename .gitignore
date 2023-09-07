@@ -3,6 +3,9 @@ out/
 generator-out/
 prompt-out/
 llm-out/
+img-out/
+
+.vscode/
 
 
 # Byte-compiled / optimized / DLL files
