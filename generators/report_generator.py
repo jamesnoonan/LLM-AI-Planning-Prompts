@@ -48,7 +48,7 @@ def convert_string_to_tuple(input):
 def generate_result_md(folder, index, case, prompt, response):
     date_text = datetime.date.today().strftime("%Y-%m-%d")
     time_text = datetime.datetime.now().time().strftime("%H-%M-%S")
-    image_filename = f'case{index}-{date_text}-{time_text}.png'
+    image_filename = f'{date_text}-{time_text}-case{index}.png'
 
     cells = convert_string_to_tuple(case.get("size", "5,5"))
     initial_pos = convert_string_to_tuple(case.get("initial", "0,0"))

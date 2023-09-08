@@ -1,11 +1,14 @@
 from PIL import Image, ImageDraw
 import os
 
+# Configure the outputted image
+img_size = (3072, 1024)
+padding = (1074, 50)
+
+# Colors specified in RGB
 black_color = (0, 0, 0)
 red_color = (255, 0, 0)
 aqua_color = (51, 239, 242)
-
-img_size = (2048, 1024)
 
 
 def get_grid_pos(x, y, padding, cells):
@@ -54,8 +57,6 @@ def draw_circle(draw, padding, cells, x, y, color):
 
 
 def generate_image(cells, initial_pos, goal_pos, obstacles, output_filename="img-out/output_image.png"):
-    padding = (562, 50)
-
     img = Image.new("RGB", img_size, "white")
     draw = ImageDraw.Draw(img)
 
