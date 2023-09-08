@@ -3,7 +3,11 @@ A small tool to assist the generation of consistently formatted prompts for Larg
 
 ## Prompt Generation
 ### Usage
-It can be run using command line arguments (`python generator.py ./examples/blocksworld-1.json`) or interactively (`python generator.py`). When using command line arguments, the program takes up to arguments: the input file and output file (the output file can be omitted and it will be saved to `prompt-out` with the same filename as the input).
+The LLM tests can be run using command line arguments (`python main.py 5 3 3`) or interactively (`python main.py`). When using command line arguments, the program takes up to three arguments: the problem size, the number of cases to generate, and the number of obstacles to generate. Any arguments not given will be asked for using standard input.
+
+The report will be written to the `report-out` folder in Markdown.
+
+*Note: The generation is made up of multiple steps, which can be run individually if needed. The results will saved to a JSON file.*
 
 ### Domains
 The `domain` property changes the type of problem. The currently supported domains are:
@@ -17,46 +21,3 @@ The currently supported representations are:
 - Natural Language Casual (`nl-casual`)
 - Natural Language Formal (`nl-formal`) - *In progress*
 - PDDL (`pddl`)  - *In progress*
-
-
- 
-### Input Format
-Data is read using the JSON format. Use the `domain`, `representation` and `nshot` properties to control how the data is handled. The `data` property stores a list of the cases to construct the prompts from. The format of the `data` property may be different for different domains. Look in the `examples` folder for the structure of the input files for each `domain`.
-```
-{
-    "domain": "blocksworld",
-    "representation": "nl-casual",
-    "nshot": 0,
-    "data": [
-        {
-            "initial": ["a", "b", "c", "d"],
-            "goal": ["a,b,c,d"]
-        },
-        {
-            "initial": ["b", "a,c"],
-            "goal": ["a,b,c"]
-        },
-        {
-            "initial": ["a,b,c", "d"],
-            "goal": ["a,b,c,d"]
-        }
-    ]
-}
-```
-
-## Running Prompts on the LLM
-The generated prompts can be run programmatically on OpenAI's models through the `run_llm.py` file.
-
-### Setup
-To run this, you will need an OpenAI account with API access. Once you have this, create an `.env` file in this directory with the following key value pairs:
-
-```
-OPENAI_ORG=<organisation-id-here>
-OPENAI_API_KEY=<api-secret-key-here>
-```
-
-### Usage
-The input to `run_llm.py` is designed to match up with the output of `generator.py`. It can be run using command line arguments (`python run_llm.py ./prompt-out/blocksworld-1.json`) or interactively (`python run_llm.py`). When using command line arguments, the program takes up to arguments: the input file and output file (the output file can be omitted and it will be saved to `llm-out` with the same filename as the input). 
-
-### Models
-Currently all the requests use the model `gpt-3.5-turbo-0613`, however in the future we will support a larger variety of models.
