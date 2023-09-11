@@ -1,5 +1,7 @@
 import openai
 import bardapi
+import pprint
+import google.generativeai as palm
 import os
 from dotenv import load_dotenv
 
@@ -37,3 +39,23 @@ class BardLLM:
 
     def get_response(self, prompt):
         return self.bard.get_answer(prompt)['content']
+    
+class PaLMLLM:
+    def __init__(self):
+        palm.configure(api_key='YOUR_API_KEY')
+        models = [m for m in palm.list_models() if 'generateText' in m.supported_generation_methods]
+        self.model = models[0].name
+    
+    def get_response(self, prompt):
+        completion = palm.generate_text(
+            model=self.model,
+            prompt=prompt,
+            temperature=0,
+            # The maximum length of the response
+            max_output_tokens=800,
+        )
+
+        return completion.result
+
+    
+
