@@ -64,7 +64,14 @@ class BlocksWorldGenerator(PromptGenerator):
 
 class Navigation2DGenerator(PromptGenerator):
     def get_domain_text(self):
-        return "You are a robot in a discrete finite grid. You start at a certain position and aim to reach the goal position. However, you can only move one square at a time and you cannot move diagonally. There may be obstacles in your path, which you cannot move onto or over. Coordinates are represented as (x,y)."
+        match self.representation:
+            case "nl-casual":
+                return "You are a robot in a discrete finite grid. You start at a certain position and aim to reach the goal position. However, you can only move one square at a time and you cannot move diagonally. There may be obstacles in your path, which you cannot move onto or over. Coordinates are represented as (x,y)."
+            case "nl-math":
+                return "Let r denote a discrete, non-negative 2-dimensional point. The value of r is initially set to value s. A transition t is a list of two points where the distance between them is exactly one. Transitions cannot include a point that is in list o."
+
+
+        return ""
     
     def get_problem_text(self, case):
         grid_size = case.get("size", "2,2").split(',')
@@ -72,18 +79,40 @@ class Navigation2DGenerator(PromptGenerator):
         goal_pos = case.get("goal", "1,1")
         obstacles = case.get("obstacles", [])
 
-        return f'The grid is {grid_size[0]} wide and {grid_size[1]} tall. You are initially located at ({initial_pos}) and you need to get to ({goal_pos}). {self.get_obstacles(obstacles)}\n Please reply only with the sequence of coordinates that you visit.'
+        match self.representation:
+            case "nl-casual":
+                return f'The grid is {grid_size[0]} wide and {grid_size[1]} tall. You are initially located at ({initial_pos}) and you need to get to ({goal_pos}). {self.get_obstacles(obstacles)}\n Please reply only with the sequence of coordinates that you visit.'
+            case "nl-math":
+                return f'r may move no further than {int(grid_size[0]) - 1} on the x-axis and {int(grid_size[1]) - 1} on the y-axis. Let o={self.get_obstacles(obstacles)}. Given s=({initial_pos}) and g=({goal_pos}), what is the sequence of valid transitions needed to move r to g? Please reply only with this sequence.'
+            
+        return ""
 
     def get_obstacles(self, obstacles):
         if (len(obstacles) == 0):
-            return "There are no obstacles."
+            match self.representation:
+                case "nl-casual":
+                    return "There are no obstacles."
+                case "nl-math":
+                    return "[]"
         elif (len(obstacles) == 1):
-            return f'There is an obstacle at ({obstacles[0]}).'
+            match self.representation:
+                case "nl-casual":
+                    return f'There is an obstacle at ({obstacles[0]}).'
+                case "nl-math":
+                    return f'[{obstacles[0]}]'
         
-        output = 'There are obstacles at '
-        for i in range(0, len(obstacles) - 1):
-            output += f'({obstacles[i]}), '
-        output += f'and ({obstacles[-1]}).'
+        match self.representation:
+            case "nl-casual":
+                output = 'There are obstacles at '
+                for i in range(0, len(obstacles) - 1):
+                    output += f'({obstacles[i]}), '
+                output += f'and ({obstacles[-1]}).'
+            case "nl-math":
+                output = '['
+                for i in range(len(obstacles)):
+                    output += f'({obstacles[i]}), '
+                output += ']'
+
 
         return output
     
