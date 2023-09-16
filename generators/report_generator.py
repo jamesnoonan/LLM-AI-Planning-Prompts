@@ -45,9 +45,10 @@ def convert_string_to_tuple(input):
     values = input.split(",")
     return list(map(int, values))
 
+# Returns None if unable to parse
 def parse_solution_string(response):
-    coords = re.split(r'\s*->\s*', response)  # Split on arrows with optional spaces
     try:
+        coords = re.split(r'\s*->\s*', response)  # Split on arrows with optional spaces
         return [list(map(int, coord.strip("()").split(","))) for coord in coords]
     except:
         return None
