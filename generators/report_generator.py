@@ -10,23 +10,28 @@ def generate_report(cases, prompts, responses, output_filename):
     os.makedirs(os.path.dirname(output_filename), exist_ok=True)
 
     # Generate Markdown
-    output_data = generate_title_md(cases)
+    output_data = ""
 
     cases_data = cases.get('data', [])
     prompts_data = prompts.get('prompts', [])
     responses_data = responses.get('results', [])
+    valid_count = 0
 
     if (cases.get('domain', 'none') == 'navigation-2d'):
         for i in range(len(cases_data)):
-            output_data += generate_result_md(folder, i, cases_data[i], prompts_data[i], responses_data[i].get("response", ""))
-
+            output_result = generate_result_md(folder, i, cases_data[i], prompts_data[i], responses_data[i].get("response", ""))
+            output_data += output_result[0]
+            if(output_result[1]):
+                valid_count += 1
+    
+    output_data = generate_title_md(cases, valid_count) + output_data
     # Save to file and return
     with open(output_filename, "w") as output_file:
         output_file.write(output_data)
     return output_data
 
 
-def generate_title_md(cases):
+def generate_title_md(cases, valid_count):
     time_text = datetime.datetime.now().time().strftime("%H:%M:%S")
     date_text = datetime.date.today().strftime("%d/%m/%Y")
 
@@ -38,6 +43,7 @@ def generate_title_md(cases):
 - **Representation**: {cases.get('representation', 'none')}
 - **Examples Given to LLM**: {cases.get('nshot', 'none')} examples
 - **Count**: {len(cases.get('data', []))} test cases
+- **Valid Percentage**: {valid_count / len(cases.get('data', []))}
 
 """
 
@@ -107,5 +113,5 @@ def generate_result_md(folder, index, case, prompt, response):
 ### Response
 
 {response}
-"""
+""", is_valid_solution(path, obstacles, initial_pos, goal_pos)
 
