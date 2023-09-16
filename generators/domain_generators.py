@@ -85,7 +85,7 @@ class Navigation2DGenerator(PromptGenerator):
 )
 """
     def generate_problem_pddl(self, size, initial, goal, obstacles):
-        width, height = map(int, size.split(","))
+        width, height = map(int, size)
         init_x, init_y = map(int, initial.split(","))
         goal_x, goal_y = map(int, goal.split(","))
         

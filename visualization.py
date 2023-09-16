@@ -1,6 +1,5 @@
 from PIL import Image, ImageDraw
 import os
-import re
 
 # Configure the outputted image
 img_size = (3072, 1024)
@@ -69,7 +68,7 @@ def draw_path(draw, padding, cells, path_coords, color, thickness=10):
         # Draw the line
         draw.line([start_center, end_center], fill=color, width=thickness)
 
-def generate_image(cells, initial_pos, goal_pos, obstacles, response = "", output_filename="img-out/output_image.png"):
+def generate_image(cells, initial_pos, goal_pos, obstacles, response = None, output_filename="img-out/output_image.png"):
     img = Image.new("RGB", img_size, "white")
     draw = ImageDraw.Draw(img)
 
@@ -79,12 +78,13 @@ def generate_image(cells, initial_pos, goal_pos, obstacles, response = "", outpu
     for obstacle in obstacles:
         color_cell(draw, padding, cells, obstacle[0], obstacle[1], black_color)
 
-        draw_path(draw, padding, cells, response, aqua_color)
-
     draw_grid(draw, padding, cells, 5)
 
-    for coord in response:
-        draw_circle(draw, padding, cells, coord[0], coord[1], 0.40, aqua_color)
+    # If the response is given, draw the path that the llm suggested
+    if response != None:
+        draw_path(draw, padding, cells, response, aqua_color)
+        for coord in response:
+            draw_circle(draw, padding, cells, coord[0], coord[1], 0.40, aqua_color)
 
     os.makedirs(os.path.dirname(output_filename), exist_ok=True)
     img.save(output_filename)

@@ -47,12 +47,18 @@ def convert_string_to_tuple(input):
 
 def parse_solution_string(response):
     coords = re.split(r'\s*->\s*', response)  # Split on arrows with optional spaces
-    return [list(map(int, coord.strip("()").split(","))) for coord in coords]
+    try:
+        return [list(map(int, coord.strip("()").split(","))) for coord in coords]
+    except:
+        return None
 
-def is_valid_solution(path, obstacles):
-    print(path)
-    print(obstacles)
-    
+# Checks if solution is from the initial state to the goal state, with each move
+# only a single non-diagonal jump and no obstacles crossed
+def is_valid_solution(path, obstacles, initial, goal):
+    # Response must start at initial and finish at goal
+    if path[0] != initial or path[-1] != goal:
+        return False
+
     for i in range(len(path)):
         # Check if the cell is an obstacle
         if path[i] in obstacles:
@@ -80,12 +86,16 @@ def generate_result_md(folder, index, case, prompt, response):
     goal_pos = convert_string_to_tuple(case.get("goal", "1,1"))
     obstacles = list(map(convert_string_to_tuple, case.get("obstacles", [])))
     path = parse_solution_string(response)
-    path_validity = "Valid" if is_valid_solution(path, obstacles) else "Invalid"
+
+    if path == None:
+        path_validity = "Syntax Error"
+    else:
+        path_validity = "Valid" if is_valid_solution(path, obstacles, initial_pos, goal_pos) else "Invalid"
     
 
     generate_image(cells, initial_pos, goal_pos, obstacles, path, f'{folder}/images/{image_filename}')
 
-    return f"""## Test Case {index+1}
+    return f"""## Test Case {index+1} [{path_validity}]
 
 ### Prompt
 
@@ -96,11 +106,5 @@ def generate_result_md(folder, index, case, prompt, response):
 ### Response
 
 {response}
-
-
-### Path Validity
-
-{path_validity}
-
 """
 
