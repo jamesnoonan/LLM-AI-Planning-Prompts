@@ -63,60 +63,136 @@ class BlocksWorldGenerator(PromptGenerator):
         return ""
 
 class Navigation2DGenerator(PromptGenerator):
+### the old version for domain and problem translator
+#     grid_domain_pddl_text = """
+# (define (domain grid-navigation)
+# (:requirements :strips :typing)
+
+# (:types
+#     cell
+# )
+
+# (:predicates
+#     (agent-at ?pos - cell)
+#     (obstacle-at ?pos - cell)  ; Obstacle-at predicate
+#     (neighbors ?pos1 - cell ?pos2 - cell)
+# )
+
+# (:action move
+#     :parameters (?from - cell ?to - cell)
+#     :precondition (and (agent-at ?from) (neighbors ?from ?to) (not (obstacle-at ?to))) 
+#     :effect (and (not (agent-at ?from)) (agent-at ?to))
+# )
+# )
+# """
+#     def generate_problem_pddl(self, size, initial, goal, obstacles):
+#         width, height = map(int, size)
+#         init_x, init_y = map(int, initial.split(","))
+#         goal_x, goal_y = map(int, goal.split(","))
+        
+#         # Generate objects
+#         objects = []
+#         for x in range(width):
+#             for y in range(height):
+#                 objects.append(f"cell-{x}-{y}")
+#         objects_str = " ".join(objects)
+        
+#         # Generate init states
+#         init_states = []
+#         init_states.append(f"(agent-at cell-{init_x}-{init_y})")
+        
+#         # Generate neighbors
+#         for x in range(width):
+#             for y in range(height):
+#                 if x + 1 < width:
+#                     init_states.append(f"(neighbors cell-{x}-{y} cell-{x+1}-{y})")
+#                     init_states.append(f"(neighbors cell-{x+1}-{y} cell-{x}-{y})") # ensure the reverse also holds
+#                 if y + 1 < height:
+#                     init_states.append(f"(neighbors cell-{x}-{y} cell-{x}-{y+1})")
+#                     init_states.append(f"(neighbors cell-{x}-{y+1} cell-{x}-{y})")
+        
+#         # Generate obstacles
+#         for obstacle in obstacles:
+#             obs_x, obs_y = map(int, obstacle.split(","))
+#             init_states.append(f"(obstacle-at cell-{obs_x}-{obs_y})")  
+        
+#         init_states_str = "\n    ".join(init_states)
+        
+#         # Generate the full PDDL string
+#         problem_pddl = f"""(define (problem grid-problem)
+# (:domain grid-navigation)
+# (:objects
+#     {objects_str}
+# )
+# (:init
+#     {init_states_str}
+# )
+# (:goal (agent-at cell-{goal_x}-{goal_y}))
+# )"""
+    
+#         return problem_pddl
+
+### the new version
+# now use the successor definition instead of neighbour, reduct complexity from O(xy) to O(x+y)
     grid_domain_pddl_text = """
 (define (domain grid-navigation)
-(:requirements :strips :typing)
+  (:requirements :strips :typing)
+  
+  (:types
+    x y
+  )
 
-(:types
-    cell
-)
+  (:predicates
+    (succ-x ?a - x ?b - x)
+    (succ-y ?a - y ?b - y)
+    (robot-x ?x - x)
+    (robot-y ?y - y)
+    (obstacle ?x - x ?y - y)
+  )
 
-(:predicates
-    (agent-at ?pos - cell)
-    (obstacle-at ?pos - cell)  ; Obstacle-at predicate
-    (neighbors ?pos1 - cell ?pos2 - cell)
-)
+  (:action move-x
+    :parameters (?from-x - x ?from-y - y ?to-x - x)
+    :precondition (and (or (succ-x ?from-x ?to-x) (succ-x ?to-x ?from-x)) (robot-x ?from-x) (robot-y ?from-y) (not (obstacle ?to-x ?from-y)))
+    :effect (and (not (robot-x ?from-x)) (robot-x ?to-x))
+  )
 
-(:action move
-    :parameters (?from - cell ?to - cell)
-    :precondition (and (agent-at ?from) (neighbors ?from ?to) (not (obstacle-at ?to))) 
-    :effect (and (not (agent-at ?from)) (agent-at ?to))
-)
+  (:action move-y
+    :parameters (?from-x - x ?from-y - y ?to-y - y)
+    :precondition (and (or (succ-y ?from-y ?to-y) (succ-y ?to-y ?from-y)) (robot-x ?from-x) (robot-y ?from-y) (not (obstacle ?from-x ?to-y)))
+    :effect (and (not (robot-y ?from-y)) (robot-y ?to-y))
+  )
 )
 """
-    def generate_problem_pddl(self, size, initial, goal, obstacles):
+    def generate_problem_pddl(size, initial, goal, obstacles):
+        # Read instance stats
         width, height = map(int, size)
         init_x, init_y = map(int, initial.split(","))
         goal_x, goal_y = map(int, goal.split(","))
         
         # Generate objects
-        objects = []
-        for x in range(width):
-            for y in range(height):
-                objects.append(f"cell-{x}-{y}")
-        objects_str = " ".join(objects)
+        x_objects = [f"x{i} - x" for i in range(width)]
+        y_objects = [f"y{i} - y" for i in range(height)]
         
-        # Generate init states
+        objects_str = "\n    ".join(x_objects + y_objects)
+        
+        # Generate init states predicates
         init_states = []
-        init_states.append(f"(agent-at cell-{init_x}-{init_y})")
+        init_states.append(f"(robot-x x{init_x})")
+        init_states.append(f"(robot-y y{init_y})")
         
-        # Generate neighbors
-        for x in range(width):
-            for y in range(height):
-                if x + 1 < width:
-                    init_states.append(f"(neighbors cell-{x}-{y} cell-{x+1}-{y})")
-                    init_states.append(f"(neighbors cell-{x+1}-{y} cell-{x}-{y})") # ensure the reverse also holds
-                if y + 1 < height:
-                    init_states.append(f"(neighbors cell-{x}-{y} cell-{x}-{y+1})")
-                    init_states.append(f"(neighbors cell-{x}-{y+1} cell-{x}-{y})")
+        # Generate successor states predicates for x and y
+        for i in range(width - 1):
+            init_states.append(f"(succ-x x{i} x{i+1})")
+        for i in range(height - 1):
+            init_states.append(f"(succ-y y{i} y{i+1})")
         
-        # Generate obstacles
+        # Generate obstacles predicates
         for obstacle in obstacles:
             obs_x, obs_y = map(int, obstacle.split(","))
-            init_states.append(f"(obstacle-at cell-{obs_x}-{obs_y})")  
+            init_states.append(f"(obstacle x{obs_x} y{obs_y})")
         
         init_states_str = "\n    ".join(init_states)
-        
+    
         # Generate the full PDDL string
         problem_pddl = f"""(define (problem grid-problem)
 (:domain grid-navigation)
@@ -126,11 +202,10 @@ class Navigation2DGenerator(PromptGenerator):
 (:init
     {init_states_str}
 )
-(:goal (agent-at cell-{goal_x}-{goal_y}))
+(:goal (and (robot-x x{goal_x}) (robot-y y{goal_y})))
 )"""
-    
+        
         return problem_pddl
-    
 
     def get_domain_text(self):
         match self.representation:
