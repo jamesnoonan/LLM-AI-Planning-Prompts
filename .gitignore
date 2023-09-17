@@ -4,6 +4,8 @@ generator-out/
 prompt-out/
 llm-out/
 img-out/
+report-out/
+tmp_results/
 
 .vscode/
 

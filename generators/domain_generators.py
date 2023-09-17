@@ -85,7 +85,7 @@ class Navigation2DGenerator(PromptGenerator):
 )
 """
     def generate_problem_pddl(self, size, initial, goal, obstacles):
-        width, height = map(int, size.split(","))
+        width, height = map(int, size)
         init_x, init_y = map(int, initial.split(","))
         goal_x, goal_y = map(int, goal.split(","))
         
@@ -151,12 +151,11 @@ class Navigation2DGenerator(PromptGenerator):
 
         match self.representation:
             case "nl-casual":
-                return f'The grid is {grid_size[0]} wide and {grid_size[1]} tall. You are initially located at ({initial_pos}) and you need to get to ({goal_pos}). {self.get_obstacles(obstacles)}\n Please reply only with the sequence of coordinates that you visit.'
+                return f'The grid is {grid_size[0]} wide and {grid_size[1]} tall. You are initially located at ({initial_pos}) and you need to get to ({goal_pos}). {self.get_obstacles(obstacles)}\n Please reply only with the sequence of coordinates that you visit and no explanations. Use -> to connect the coordinates.'
             case "nl-math":
-                return f'r may move no further than {int(grid_size[0]) - 1} on the x-axis and {int(grid_size[1]) - 1} on the y-axis. Let o={self.get_obstacles(obstacles)}. Given s=({initial_pos}) and g=({goal_pos}), what is the sequence of valid transitions needed to move r to g? Please reply only with this sequence.'
+                return f'r may move no further than {int(grid_size[0]) - 1} on the x-axis and {int(grid_size[1]) - 1} on the y-axis. Let o={self.get_obstacles(obstacles)}. Given s=({initial_pos}) and g=({goal_pos}), what is the sequence of valid transitions needed to move r to g? Please reply only with this sequence and no explanations. Use -> to connect the coordinates.'
             case "pddl":
                 return self.generate_problem_pddl(grid_size, initial_pos, goal_pos, obstacles)
-
         return ""
 
     def get_obstacles(self, obstacles):

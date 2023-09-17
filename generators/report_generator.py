@@ -1,5 +1,6 @@
 import os
 import datetime
+import re;
 
 from visualization import generate_image
 
@@ -44,6 +45,37 @@ def convert_string_to_tuple(input):
     values = input.split(",")
     return list(map(int, values))
 
+# Returns None if unable to parse
+def parse_solution_string(response):
+    try:
+        coords = re.split(r'\s*->\s*', response)  # Split on arrows with optional spaces
+        return [list(map(int, coord.strip("()").split(","))) for coord in coords]
+    except:
+        return None
+
+# Checks if solution is from the initial state to the goal state, with each move
+# only a single non-diagonal jump and no obstacles crossed
+def is_valid_solution(path, obstacles, initial, goal):
+    # Response must start at initial and finish at goal
+    if path[0] != initial or path[-1] != goal:
+        return False
+
+    for i in range(len(path)):
+        # Check if the cell is an obstacle
+        if path[i] in obstacles:
+            return False
+        
+        # Check for valid moves between consecutive cells
+        if i > 0:
+            dx = abs(path[i][0] - path[i-1][0])
+            dy = abs(path[i][1] - path[i-1][1])
+            
+            # If the move is diagonal or jumps over blocks
+            if dx + dy != 1:
+                return False
+            
+    return True
+
 # Note: this currently only is written for navigation 2D
 def generate_result_md(folder, index, case, prompt, response):
     date_text = datetime.date.today().strftime("%Y-%m-%d")
@@ -54,10 +86,17 @@ def generate_result_md(folder, index, case, prompt, response):
     initial_pos = convert_string_to_tuple(case.get("initial", "0,0"))
     goal_pos = convert_string_to_tuple(case.get("goal", "1,1"))
     obstacles = list(map(convert_string_to_tuple, case.get("obstacles", [])))
+    path = parse_solution_string(response)
 
-    generate_image(cells, initial_pos, goal_pos, obstacles, f'{folder}/images/{image_filename}')
+    if path == None:
+        path_validity = "Syntax Error"
+    else:
+        path_validity = "Valid" if is_valid_solution(path, obstacles, initial_pos, goal_pos) else "Invalid"
+    
 
-    return f"""## Test Case {index+1}
+    generate_image(cells, initial_pos, goal_pos, obstacles, path, f'{folder}/images/{image_filename}')
+
+    return f"""## Test Case {index+1} [{path_validity}]
 
 ### Prompt
 
@@ -68,6 +107,5 @@ def generate_result_md(folder, index, case, prompt, response):
 ### Response
 
 {response}
-
 """
 
