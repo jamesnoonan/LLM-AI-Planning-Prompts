@@ -236,9 +236,7 @@ The robot's movement must follow the following rules:
 
 Based on the above rule, we will be able to consider the center positions of robot before/after each move as vertices, and the movement as a straght line edge.
 Thus, we define a movement of robot center from (x1,y1) to (x2, y2) as "edge[(x1, y1) -> (x2, y2)]"
-
 Please notice that Not just the vertices (robot's position before and after each move) but also the entire path between any two vertices must not overlap with the obstacles.
-Each edge should be validated for obstacle overlap, not just the endpoints.
 
 The goal is to find an optimal path composed by many valid movements that transfer the robot's center position to {to_coord(goal_x,goal_y)}
 Please solve the above question as a simple motion-planning problem and present your solution of optimal path containing total n movement in the format of 
@@ -273,7 +271,8 @@ If you cannot find a valid path from initial position to goal position, please r
             case "nl-math":
                 return f'r may move no further than {int(grid_size[0]) - 1} on the x-axis and {int(grid_size[1]) - 1} on the y-axis. Let o={self.get_obstacles(obstacles)}. Given s=({initial_pos}) and g=({goal_pos}), what is the sequence of valid transitions needed to move r to g? Please reply only with this sequence and no explanations. Use -> to connect the coordinates.'
             case "motion":
-                return f'{self.generate_problem_motion(grid_size, initial_pos, goal_pos, obstacles)}\n please also plot the result as a graph'
+                return self.generate_problem_motion(grid_size, initial_pos, goal_pos, obstacles)
+                # return f'{self.generate_problem_motion(grid_size, initial_pos, goal_pos, obstacles)}\n please also plot the final result and only final result as a graph'
             case "pddl":
                 return f'Below is the domain.pddl file in text: \n {self.generate_problem_pddl(grid_size, initial_pos, goal_pos, obstacles)} \nNow, please give me the optimal plan and print out each action within the plan line by line. For example, an optimal plan containing a1->a2->a3 should be printed as "a1 \n a2 \n a3" '
         return ""
