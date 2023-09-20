@@ -237,6 +237,9 @@ The robot's movement must follow the following rules:
 Based on the above rule, we will be able to consider the center positions of robot before/after each move as vertices, and the movement as a straght line edge.
 Thus, we define a movement of robot center from (x1,y1) to (x2, y2) as "edge[(x1, y1) -> (x2, y2)]"
 
+Please notice that Not just the vertices (robot's position before and after each move) but also the entire path between any two vertices must not overlap with the obstacles.
+Each edge should be validated for obstacle overlap, not just the endpoints.
+
 The goal is to find an optimal path composed by many valid movements that transfer the robot's center position to {to_coord(goal_x,goal_y)}
 Please solve the above question as a simple motion-planning problem and present your solution of optimal path containing total n movement in the format of 
 "(x0, y0)->(x1, y1)->...->(xn, yn)" 
