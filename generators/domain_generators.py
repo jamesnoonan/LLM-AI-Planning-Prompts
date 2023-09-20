@@ -231,8 +231,8 @@ There are also {len(obs_centers)} square-shaped obstacles of side-length 1, thei
 
 The robot's movement must follow the following rules:
 1) within each move, the robot can only move horizontally or vertically as a straight line, we do not restrict the distance to move in each movement
-2) during the entire moving process,, the entire robot square cannot go beyond the the space's boundary, we do allow the side of the robot to overlap with boundary
-3) during the entire moving process,, the entire robot square cannot overlap with any of the obstacle square, however we do allow their boundary to overlap
+2) during the entire moving process, the entire robot square cannot go beyond the the space's boundary at any point, however we do allow the side of the robot to overlap with boundary
+3) during the entire moving process, the entire robot square cannot overlap with any of the obstacle square at any point, not even partially. however we do allow their boundary to overlap
 
 Based on the above rule, we will be able to consider the center positions of robot before/after each move as vertices, and the movement as a straght line edge.
 Thus, we define a movement of robot center from (x1,y1) to (x2, y2) as "edge[(x1, y1) -> (x2, y2)]"
