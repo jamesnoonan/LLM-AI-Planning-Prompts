@@ -273,7 +273,7 @@ If you cannot find a valid path from initial position to goal position, please r
             case "nl-math":
                 return f'r may move no further than {int(grid_size[0]) - 1} on the x-axis and {int(grid_size[1]) - 1} on the y-axis. Let o={self.get_obstacles(obstacles)}. Given s=({initial_pos}) and g=({goal_pos}), what is the sequence of valid transitions needed to move r to g? Please reply only with this sequence and no explanations. Use -> to connect the coordinates.'
             case "motion":
-                return self.generate_problem_motion(grid_size, initial_pos, goal_pos, obstacles)
+                return f'{self.generate_problem_motion(grid_size, initial_pos, goal_pos, obstacles)}\n please also plot the result as a graph'
             case "pddl":
                 return f'Below is the domain.pddl file in text: \n {self.generate_problem_pddl(grid_size, initial_pos, goal_pos, obstacles)} \nNow, please give me the optimal plan and print out each action within the plan line by line. For example, an optimal plan containing a1->a2->a3 should be printed as "a1 \n a2 \n a3" '
         return ""
