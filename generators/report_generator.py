@@ -54,7 +54,14 @@ def convert_string_to_tuple(input):
 # Returns None if unable to parse
 def parse_solution_string(response):
     try:
-        coords = re.split(r'\s*->\s*', response)  # Split on arrows with optional spaces
+        # Extract the sequence of coordinates using regex
+        match = re.search(r'(\(\d+,\d+\)(\s*->\s*\(\d+,\d+\))+)', response)
+        if not match:
+            return None
+        
+        sequence = match.group(0)
+        coords = re.split(r'\s*->\s*', sequence)  # Split on arrows with optional spaces
+        
         return [list(map(int, coord.strip("()").split(","))) for coord in coords]
     except:
         return None
@@ -62,6 +69,8 @@ def parse_solution_string(response):
 # Checks if solution is from the initial state to the goal state, with each move
 # only a single non-diagonal jump and no obstacles crossed
 def is_valid_solution(path, obstacles, initial, goal):
+    if(path == None):
+        return False
     # Response must start at initial and finish at goal
     if path[0] != initial or path[-1] != goal:
         return False
