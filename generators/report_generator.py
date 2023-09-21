@@ -54,12 +54,12 @@ def convert_string_to_tuple(input):
 # Returns None if unable to parse
 def parse_solution_string(response):
     try:
-        # Extract the sequence of coordinates using regex
-        match = re.search(r'(\(\d+,\d+\)(\s*->\s*\(\d+,\d+\))+)', response)
-        if not match:
+        # Extract the first sequence of coordinates using regex
+        matches = re.search(r'(\(\d+\s*,\s*\d+\)(?:\s*->\s*\(\d+\s*,\s*\d+\))*)', response)
+        if not matches:
             return None
         
-        sequence = match.group(0)
+        sequence = matches.group(0)
         coords = re.split(r'\s*->\s*', sequence)  # Split on arrows with optional spaces
         
         return [list(map(int, coord.strip("()").split(","))) for coord in coords]
