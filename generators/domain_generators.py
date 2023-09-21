@@ -215,7 +215,7 @@ class Navigation2DGenerator(PromptGenerator):
 
         def to_coord(x, y):
             # function that transfer grid-space representation to coordinate space representation
-            return f'({x+0.5}, {y+0.5})'
+            return f'({x}, {y})'
         
         # Generate obstacles coordinates
         obs_centers = []
@@ -225,8 +225,8 @@ class Navigation2DGenerator(PromptGenerator):
         obs_centers_str = "; ".join(obs_centers)
 
         motion_string = f"""The rectangular-shaped space is defined from 0 to {width} on x-axis and 0 to {height} on y-axis. 
-There is a square-shaped robot of side-length 1 whose intial center position is located at {to_coord(init_x, init_y)}.
-There are also {len(obs_centers)} square-shaped obstacles of side-length 1, their center positions is given below: 
+There is a square-shaped robot of side-length 1 whose intial left-lower corner position is located at {to_coord(init_x, init_y)}.
+There are also {len(obs_centers)} square-shaped obstacles of side-length 1, their left-lower corner position is given below: 
 {obs_centers_str}
 
 The robot's movement must follow the following rules:
@@ -234,15 +234,14 @@ The robot's movement must follow the following rules:
 2) during the entire moving process, the entire robot square cannot go beyond the the space's boundary at any point, however we do allow the side of the robot to overlap with boundary
 3) during the entire moving process, the entire robot square cannot overlap with any of the obstacle square at any point, not even partially. however we do allow their boundary to overlap
 
-Based on the above rule, we will be able to consider the center positions of robot before/after each move as vertices, and the movement as a straght line edge.
+Based on the above rule, we will be able to consider the left-lower corner positions of robot before/after each move as vertices, and the movement as a straght line edge.
 Thus, we define a movement of robot center from (x1,y1) to (x2, y2) as "edge[(x1, y1) -> (x2, y2)]"
 Please notice that Not just the vertices (robot's position before and after each move) but also the entire path between any two vertices must not overlap with the obstacles.
 
-The goal is to find an optimal path composed by many valid movements that transfer the robot's center position to {to_coord(goal_x,goal_y)}
+The goal is to find an optimal path composed by many valid movements that transfer the robot's left-lower corner position to {to_coord(goal_x,goal_y)}
 Please solve the above question as a simple motion-planning problem. Your solution of optimal path should contain total n movement in the format of 
 "(x0, y0)->(x1, y1)->...->(xn, yn)" 
-where (x0, y0) is the initial center coordinate of the robot and (xn, yn) should the goal center coordinate after n valid movement. Meanwhile each -> represent one movement.
-If you cannot find a valid path from initial position to goal position, please return "unable to find valid path" and give your reason. 
+where (x0, y0) is the initial square robot's left-lower corner coordinate and (xn, yn) should the goal left-lower corner coordinate of the robot after n valid movement. Meanwhile each -> represent one movement.
 """
         return motion_string
 
@@ -271,9 +270,9 @@ If you cannot find a valid path from initial position to goal position, please r
             case "nl-math":
                 return f'r may move no further than {int(grid_size[0]) - 1} on the x-axis and {int(grid_size[1]) - 1} on the y-axis. Let o={self.get_obstacles(obstacles)}. Given s=({initial_pos}) and g=({goal_pos}), what is the sequence of valid transitions needed to move r to g? Please reply only with this sequence and no explanations. Use -> to connect the coordinates.'
             case "motion":
-                return f'{self.generate_problem_motion(grid_size, initial_pos, goal_pos, obstacles)}. \n Please reply only with the sequence of coordinates and no any other explanation meanwhile -0.5 to each element. For the format of "(x0, y0)->...->(xn, yn)", please only print "(x0-0.5, y0-0.5)->...->(xn-0.5, yn-0.5)" as your final result'
+                return f'{self.generate_problem_motion(grid_size, initial_pos, goal_pos, obstacles)}. \n Please reply only with the sequence of coordinates in the optiaml path and nothing else'
             case "pddl":
-                return f'Below is the domain.pddl file in text: \n {self.generate_problem_pddl(grid_size, initial_pos, goal_pos, obstacles)} \n Your optimal plan should containing a sequence of actions of move-x and move-y that lead the robot to the goal. Meanwhile there will be a sequence of change in "robot-x xi" and "robot-y yj" as the effect of each move, each can be transformed into a coordinate (i, j). So the final path can be transformed into a sequence of coordinates. Please solve the problem and reply only with the transition of coordinates on your optimal path, that is in the format of "(i0,j0)->(i1,j1)...->(in,jn)" for an optimal path containing n movements.'
+                return f'Below is the problem.pddl file in text: \n {self.generate_problem_pddl(grid_size, initial_pos, goal_pos, obstacles)} \n Your optimal plan should containing a sequence of actions of move-x and move-y that lead the robot to the goal. Meanwhile there will be a sequence of change in "robot-x xi" and "robot-y yj" as the effect of each move, each can be transformed into a coordinate (i, j). So the final path can be transformed into a sequence of coordinates. Please solve the problem and reply only with the transition of coordinates on your optimal path, that is in the format of "(i0,j0)->(i1,j1)...->(in,jn)" for an optimal path containing n movements.\n In the reply, only print the sequence and nothing else'
         return ""
 
     def get_obstacles(self, obstacles):
@@ -306,7 +305,7 @@ If you cannot find a valid path from initial position to goal position, please r
         return output
     
     def get_example_text(self, index):
-        return ""
+        return "If you cannot find a valid solution, please return only '(-1, -1)' if no optimal path found and nothing else."
 
 class Navigation3DGenerator(PromptGenerator):
     def get_domain_text(self):
