@@ -163,7 +163,7 @@ class Navigation2DGenerator(PromptGenerator):
   )
 )
 """
-    def generate_problem_pddl(size, initial, goal, obstacles):
+    def generate_problem_pddl(self, size, initial, goal, obstacles):
         # Read instance stats
         width, height = map(int, size)
         init_x, init_y = map(int, initial.split(","))
@@ -206,6 +206,45 @@ class Navigation2DGenerator(PromptGenerator):
 )"""
         
         return problem_pddl
+    
+    def generate_problem_motion(self, size, initial, goal, obstacles):
+        # Read instance stats
+        width, height = map(int, size)
+        init_x, init_y = map(int, initial.split(","))
+        goal_x, goal_y = map(int, goal.split(","))
+
+        def to_coord(x, y):
+            # function that transfer grid-space representation to coordinate space representation
+            return f'({x+0.5}, {y+0.5})'
+        
+        # Generate obstacles coordinates
+        obs_centers = []
+        for i in range(len(obstacles)):
+            obs_x, obs_y = map(int, obstacles[i].split(","))
+            obs_centers.append(f'o{i}-{to_coord(obs_x, obs_y)}')
+        obs_centers_str = "; ".join(obs_centers)
+
+        motion_string = f"""The rectangular-shaped space is defined from 0 to {width} on x-axis and 0 to {height} on y-axis. 
+There is a square-shaped robot of side-length 1 whose intial center position is located at {to_coord(init_x, init_y)}.
+There are also {len(obs_centers)} square-shaped obstacles of side-length 1, their center positions is given below: 
+{obs_centers_str}
+
+The robot's movement must follow the following rules:
+1) within each move, the robot can only move horizontally or vertically as a straight line, we do not restrict the distance to move in each movement
+2) during the entire moving process, the entire robot square cannot go beyond the the space's boundary at any point, however we do allow the side of the robot to overlap with boundary
+3) during the entire moving process, the entire robot square cannot overlap with any of the obstacle square at any point, not even partially. however we do allow their boundary to overlap
+
+Based on the above rule, we will be able to consider the center positions of robot before/after each move as vertices, and the movement as a straght line edge.
+Thus, we define a movement of robot center from (x1,y1) to (x2, y2) as "edge[(x1, y1) -> (x2, y2)]"
+Please notice that Not just the vertices (robot's position before and after each move) but also the entire path between any two vertices must not overlap with the obstacles.
+
+The goal is to find an optimal path composed by many valid movements that transfer the robot's center position to {to_coord(goal_x,goal_y)}
+Please solve the above question as a simple motion-planning problem and present your solution of optimal path containing total n movement in the format of 
+"(x0, y0)->(x1, y1)->...->(xn, yn)" 
+where (x0, y0) is the initial center coordinate of the robot and (xn, yn) should the goal center coordinate after n valid movement. Meanwhile each -> represent one movement.
+If you cannot find a valid path from initial position to goal position, please return "unable to find valid path" and give your reason. 
+"""
+        return motion_string
 
     def get_domain_text(self):
         match self.representation:
@@ -213,8 +252,10 @@ class Navigation2DGenerator(PromptGenerator):
                 return "You are a robot in a discrete finite grid. You start at a certain position and aim to reach the goal position. However, you can only move one square at a time and you cannot move diagonally. There may be obstacles in your path, which you cannot move onto or over. Coordinates are represented as (x,y)."
             case "nl-math":
                 return "Let r denote a discrete, non-negative 2-dimensional point. The value of r is initially set to value s. A transition t is a list of two points where the distance between them is exactly one. Transitions cannot include a point that is in list o."
+            case "motion":
+                return "Consider a simple 2-dimensional motion planning navigation problem. \n The problem happenes on a 2-d rectangular-shaped space where each point within the space can be represented by two real-number coordinates in x-axis and y-axis as (x,y). \n "
             case "pddl":
-                return "You are currently solving the below planning problem represented by two files: a domain.pddl and a problem.pddl. \ Below is the domain.pddl file: \n" + self.grid_domain_pddl_text + "\\"
+                return "Please solve the 2-dimensional grid-space-based navigation problem represented in Planning Domain Definition Language (PDDL) below, the problem is definded under two files: a domain.pddl which defines the domain environment of problem, and a problem.pddl which describe the problem instance. \n Below is the domain.pddl file in text: \n" + self.grid_domain_pddl_text + "\n"
 
         return ""
     
@@ -229,8 +270,11 @@ class Navigation2DGenerator(PromptGenerator):
                 return f'The grid is {grid_size[0]} wide and {grid_size[1]} tall. You are initially located at ({initial_pos}) and you need to get to ({goal_pos}). {self.get_obstacles(obstacles)}\n Please reply only with the sequence of coordinates that you visit and no explanations. Use -> to connect the coordinates.'
             case "nl-math":
                 return f'r may move no further than {int(grid_size[0]) - 1} on the x-axis and {int(grid_size[1]) - 1} on the y-axis. Let o={self.get_obstacles(obstacles)}. Given s=({initial_pos}) and g=({goal_pos}), what is the sequence of valid transitions needed to move r to g? Please reply only with this sequence and no explanations. Use -> to connect the coordinates.'
+            case "motion":
+                return self.generate_problem_motion(grid_size, initial_pos, goal_pos, obstacles)
+                # return f'{self.generate_problem_motion(grid_size, initial_pos, goal_pos, obstacles)}\n please also plot the final result and only final result as a graph'
             case "pddl":
-                return self.generate_problem_pddl(grid_size, initial_pos, goal_pos, obstacles)
+                return f'Below is the domain.pddl file in text: \n {self.generate_problem_pddl(grid_size, initial_pos, goal_pos, obstacles)} \nNow, please give me the optimal plan and print out each action within the plan line by line. For example, an optimal plan containing a1->a2->a3 should be printed as "a1 \n a2 \n a3" '
         return ""
 
     def get_obstacles(self, obstacles):
