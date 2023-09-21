@@ -8,7 +8,7 @@ sys.path.insert(0, './generators')
 from generators import case_generator, prompt_generator, response_generator, report_generator, llm
 
 # Modify this list to change which representations are run
-representations = ["nl-casual", "nl-math", "pddl"]
+representations = ["nl-casual", "nl-math", "pddl", "motion"]
 
 
 size = None

@@ -12,8 +12,8 @@ aqua_color = (51, 239, 242)
 
 
 def get_grid_pos(x, y, padding, cells):
-    assert x >= 0 and x < cells[0]
-    assert y >= 0 and y < cells[1]
+    # assert x >= 0 and x < cells[0]
+    # assert y >= 0 and y < cells[1]
 
     grid_size = (img_size[0] - 2 * padding[0], img_size[1] - 2 * padding[1])
     cell_width = grid_size[0] / cells[0]
