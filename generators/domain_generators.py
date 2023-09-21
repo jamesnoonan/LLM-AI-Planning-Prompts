@@ -63,77 +63,6 @@ class BlocksWorldGenerator(PromptGenerator):
         return ""
 
 class Navigation2DGenerator(PromptGenerator):
-### the old version for domain and problem translator
-#     grid_domain_pddl_text = """
-# (define (domain grid-navigation)
-# (:requirements :strips :typing)
-
-# (:types
-#     cell
-# )
-
-# (:predicates
-#     (agent-at ?pos - cell)
-#     (obstacle-at ?pos - cell)  ; Obstacle-at predicate
-#     (neighbors ?pos1 - cell ?pos2 - cell)
-# )
-
-# (:action move
-#     :parameters (?from - cell ?to - cell)
-#     :precondition (and (agent-at ?from) (neighbors ?from ?to) (not (obstacle-at ?to))) 
-#     :effect (and (not (agent-at ?from)) (agent-at ?to))
-# )
-# )
-# """
-#     def generate_problem_pddl(self, size, initial, goal, obstacles):
-#         width, height = map(int, size)
-#         init_x, init_y = map(int, initial.split(","))
-#         goal_x, goal_y = map(int, goal.split(","))
-        
-#         # Generate objects
-#         objects = []
-#         for x in range(width):
-#             for y in range(height):
-#                 objects.append(f"cell-{x}-{y}")
-#         objects_str = " ".join(objects)
-        
-#         # Generate init states
-#         init_states = []
-#         init_states.append(f"(agent-at cell-{init_x}-{init_y})")
-        
-#         # Generate neighbors
-#         for x in range(width):
-#             for y in range(height):
-#                 if x + 1 < width:
-#                     init_states.append(f"(neighbors cell-{x}-{y} cell-{x+1}-{y})")
-#                     init_states.append(f"(neighbors cell-{x+1}-{y} cell-{x}-{y})") # ensure the reverse also holds
-#                 if y + 1 < height:
-#                     init_states.append(f"(neighbors cell-{x}-{y} cell-{x}-{y+1})")
-#                     init_states.append(f"(neighbors cell-{x}-{y+1} cell-{x}-{y})")
-        
-#         # Generate obstacles
-#         for obstacle in obstacles:
-#             obs_x, obs_y = map(int, obstacle.split(","))
-#             init_states.append(f"(obstacle-at cell-{obs_x}-{obs_y})")  
-        
-#         init_states_str = "\n    ".join(init_states)
-        
-#         # Generate the full PDDL string
-#         problem_pddl = f"""(define (problem grid-problem)
-# (:domain grid-navigation)
-# (:objects
-#     {objects_str}
-# )
-# (:init
-#     {init_states_str}
-# )
-# (:goal (agent-at cell-{goal_x}-{goal_y}))
-# )"""
-    
-#         return problem_pddl
-
-### the new version
-# now use the successor definition instead of neighbour, reduct complexity from O(xy) to O(x+y)
     grid_domain_pddl_text = """
 (define (domain grid-navigation)
   (:requirements :strips :typing)
@@ -272,7 +201,11 @@ where (x0, y0) is the initial square robot's left-lower corner coordinate and (x
             case "motion":
                 return f'{self.generate_problem_motion(grid_size, initial_pos, goal_pos, obstacles)}. \n Please reply only with the sequence of coordinates connected by -> in the optiaml path and nothing else, not even explanation text.'
             case "pddl":
-                return f'Below is the problem.pddl file in text: \n {self.generate_problem_pddl(grid_size, initial_pos, goal_pos, obstacles)} \n Your optimal plan should containing a sequence of actions of move-x and move-y that lead the robot to the goal. Meanwhile there will be a sequence of change in "robot-x xi" and "robot-y yj" as the effect of each move, each can be transformed into a coordinate (i, j). So the final path can be transformed into a sequence of coordinates. Please solve the problem and reply only with the transition of coordinates on your optimal path, that is in the format of "(i0,j0)->(i1,j1)...->(in,jn)" for an optimal path containing n movements.\n In the reply, only print the sequence of coordinates connected by -> and nothing else, not even explanation text.'
+                return f"""Below is the problem.pddl file in text: \n {self.generate_problem_pddl(grid_size, initial_pos, goal_pos, obstacles)} \n Your optimal plan should containing a sequence of actions of move-x and move-y that lead the robot to the goal. 
+Meanwhile there will be a sequence of change in "robot-x xi" and "robot-y yj" as the effect of each move on robot's position, every position can be transformed into a coordinate (i, j) where both i and j are integer value. So the final path can be transformed into a sequence of coordinates. 
+Please solve the problem and output using the following format with no other explanation: 
+""(i_0,j_0)->(i_1,j_1)...->(i_n,j_n)"" 
+where each (i_a, j_a) correpond to the coordinate of robots after ath movement of the optimal path, i_a,j_a should both be integer value dervied from robot-x xi_a and robot-y yj_a"""
         return ""
 
     def get_obstacles(self, obstacles):
