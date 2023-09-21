@@ -239,7 +239,7 @@ Thus, we define a movement of robot center from (x1,y1) to (x2, y2) as "edge[(x1
 Please notice that Not just the vertices (robot's position before and after each move) but also the entire path between any two vertices must not overlap with the obstacles.
 
 The goal is to find an optimal path composed by many valid movements that transfer the robot's center position to {to_coord(goal_x,goal_y)}
-Please solve the above question as a simple motion-planning problem and present your solution of optimal path containing total n movement in the format of 
+Please solve the above question as a simple motion-planning problem. Your solution of optimal path should contain total n movement in the format of 
 "(x0, y0)->(x1, y1)->...->(xn, yn)" 
 where (x0, y0) is the initial center coordinate of the robot and (xn, yn) should the goal center coordinate after n valid movement. Meanwhile each -> represent one movement.
 If you cannot find a valid path from initial position to goal position, please return "unable to find valid path" and give your reason. 
@@ -255,7 +255,7 @@ If you cannot find a valid path from initial position to goal position, please r
             case "motion":
                 return "Consider a simple 2-dimensional motion planning navigation problem. \n The problem happenes on a 2-d rectangular-shaped space where each point within the space can be represented by two real-number coordinates in x-axis and y-axis as (x,y). \n "
             case "pddl":
-                return "Please solve the 2-dimensional grid-space-based navigation problem represented in Planning Domain Definition Language (PDDL) below, the problem is definded under two files: a domain.pddl which defines the domain environment of problem, and a problem.pddl which describe the problem instance. \n Below is the domain.pddl file in text: \n" + self.grid_domain_pddl_text + "\n"
+                return "Please solve the 2-dimensional grid-space-based navigation problem represented in Planning Domain Definition Language (PDDL), the problem is definded under two files: a domain.pddl which defines the domain environment of problem, and a problem.pddl which describe the problem instance. \n Below is the domain.pddl file in text: \n" + self.grid_domain_pddl_text + "\n"
 
         return ""
     
@@ -271,10 +271,9 @@ If you cannot find a valid path from initial position to goal position, please r
             case "nl-math":
                 return f'r may move no further than {int(grid_size[0]) - 1} on the x-axis and {int(grid_size[1]) - 1} on the y-axis. Let o={self.get_obstacles(obstacles)}. Given s=({initial_pos}) and g=({goal_pos}), what is the sequence of valid transitions needed to move r to g? Please reply only with this sequence and no explanations. Use -> to connect the coordinates.'
             case "motion":
-                return self.generate_problem_motion(grid_size, initial_pos, goal_pos, obstacles)
-                # return f'{self.generate_problem_motion(grid_size, initial_pos, goal_pos, obstacles)}\n please also plot the final result and only final result as a graph'
+                return f'{self.generate_problem_motion(grid_size, initial_pos, goal_pos, obstacles)}. \n Please reply only with the sequence of coordinates and no any other explanation meanwhile -0.5 to each element. For the format of "(x0, y0)->...->(xn, yn)", please only print "(x0-0.5, y0-0.5)->...->(xn-0.5, yn-0.5)" as your final result'
             case "pddl":
-                return f'Below is the domain.pddl file in text: \n {self.generate_problem_pddl(grid_size, initial_pos, goal_pos, obstacles)} \nNow, please give me the optimal plan and print out each action within the plan line by line. For example, an optimal plan containing a1->a2->a3 should be printed as "a1 \n a2 \n a3" '
+                return f'Below is the domain.pddl file in text: \n {self.generate_problem_pddl(grid_size, initial_pos, goal_pos, obstacles)} \n Your optimal plan should containing a sequence of actions of move-x and move-y that lead the robot to the goal. Meanwhile there will be a sequence of change in "robot-x xi" and "robot-y yj" as the effect of each move, each can be transformed into a coordinate (i, j). So the final path can be transformed into a sequence of coordinates. Please solve the problem and reply only with the transition of coordinates on your optimal path, that is in the format of "(i0,j0)->(i1,j1)...->(in,jn)" for an optimal path containing n movements.'
         return ""
 
     def get_obstacles(self, obstacles):
