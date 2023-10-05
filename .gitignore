@@ -9,6 +9,9 @@ tmp_results/
 
 .vscode/
 
+results_graph/data.csv
+results_graph/graphs.png
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
