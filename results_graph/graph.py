@@ -14,7 +14,13 @@ h_padding_internal = 0.35
 
 bar_width = 0.2
 
-color_map_name = 'tab10' # The colors of the series of data
+labels = ["NL Basic", "NL Intermediate", "NL Detailed", "PDDL"]
+colors = ["xkcd:blue", "xkcd:green", "xkcd:gold", "xkcd:red"]
+
+
+# color_map_name = 'tab20b' # The colors of the series of data
+# cmap = plt.get_cmap(color_map_name)
+# colors = cmap(np.arange(len(representation_types)))
 
 #
 # Generate graph
@@ -33,10 +39,6 @@ print(f"\n\nGenerating graph with {len(unique_densities)} obstacle densities, {l
 
 x = np.arange(np.min(unique_sizes), np.max(unique_sizes) + 1)
 graph_count = len(unique_densities)
-
-cmap = plt.get_cmap(color_map_name)
-# colors = cmap(np.linspace(0, 1, len(representation_types)))
-colors = cmap(np.arange(len(representation_types)))
 
 # Create figure and suplots, with two columns
 figure, ax = plt.subplots(int(graph_count / 2), 2, sharey=True, figsize=size)
@@ -71,12 +73,13 @@ for i in range(graph_count):
     if (col == 0):
         subplot.set_ylabel('Accuracy (% correct)')
 
-    subplot.set_xticks(x + 2*bar_width, x)
+    subplot.set_xticks(x + 1.5*bar_width, x)
 
     subplot.set_ylim(0, 100)
 
 figure.suptitle('ChatGPT 3.5 Navigation Planning Performance', y=0.97, fontsize=16)
-figure.legend(labels=representation_types, loc='lower center', ncols=4)
+figure.legend(labels=labels, loc='lower center', ncols=4)
 
 plt.subplots_adjust(left=padding, right=1-padding, bottom=padding + bottom_spacing, top=1-padding-top_spacing, wspace=w_padding_internal, hspace=h_padding_internal)
+plt.tight_layout()
 plt.savefig('graphs.png')
