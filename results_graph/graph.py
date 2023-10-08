@@ -80,6 +80,5 @@ for i in range(graph_count):
 figure.suptitle('ChatGPT 3.5 Navigation Planning Performance', y=0.97, fontsize=16)
 figure.legend(labels=labels, loc='lower center', ncols=4)
 
-plt.subplots_adjust(left=padding, right=1-padding, bottom=padding + bottom_spacing, top=1-padding-top_spacing, wspace=w_padding_internal, hspace=h_padding_internal)
-plt.tight_layout()
+plt.subplots_adjust(left=padding, right=1-(padding/2), bottom=padding + bottom_spacing, top=1-padding-top_spacing, wspace=w_padding_internal, hspace=h_padding_internal)
 plt.savefig('graphs.png')
