@@ -32,7 +32,7 @@ df = pd.read_csv("data.csv")
 # Find the sets of properties of the data
 unique_densities = df['obstacle_density'].unique()
 unique_sizes = df['size'].unique()
-representation_types = df.copy().drop(columns=["size", "obstacle_density"]).columns
+representation_types = df.copy().drop(columns=["size", "obstacle_density", "obstacle_count"]).columns
 
 # Summarise graph to be created
 print(f"\n\nGenerating graph with {len(unique_densities)} obstacle densities, {len(unique_sizes)} grid sizes with these representation types:\n{representation_types}\n\n")

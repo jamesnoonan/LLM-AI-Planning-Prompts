@@ -181,7 +181,7 @@ where (x0, y0) is the initial square robot's left-lower corner coordinate and (x
             case "nl-math":
                 return "Let r denote a discrete, non-negative 2-dimensional point. The value of r is initially set to value s. A transition t is a list of two points where the distance between them is exactly one. Transitions cannot include a point that is in list o."
             case "motion":
-                return "Consider a simple 2-dimensional motion planning navigation problem. \n The problem happenes on a 2-d rectangular-shaped space where each point within the space can be represented by two real-number coordinates in x-axis and y-axis as (x,y). \n "
+                return "Consider a simple 2-dimensional motion planning navigation problem. \n The problem happens on a 2-d rectangular-shaped space where each point within the space can be represented by two real-number coordinates in x-axis and y-axis as (x,y). \n "
             case "pddl":
                 return "Please solve the 2-dimensional grid-space-based navigation problem represented in Planning Domain Definition Language (PDDL), the problem is definded under two files: a domain.pddl which defines the domain environment of problem, and a problem.pddl which describe the problem instance. \n Below is the domain.pddl file in text: \n" + self.grid_domain_pddl_text + "\n"
 
@@ -199,7 +199,7 @@ where (x0, y0) is the initial square robot's left-lower corner coordinate and (x
             case "nl-math":
                 return f'r may move no further than {int(grid_size[0]) - 1} on the x-axis and {int(grid_size[1]) - 1} on the y-axis. Let o={self.get_obstacles(obstacles)}. Given s=({initial_pos}) and g=({goal_pos}), what is the sequence of valid transitions needed to move r to g? Please reply only with this sequence and no explanations. Use -> to connect the coordinates.'
             case "motion":
-                return f'{self.generate_problem_motion(grid_size, initial_pos, goal_pos, obstacles)}. \n Please reply only with the sequence of coordinates connected by -> in the optiaml path and nothing else, not even explanation text.'
+                return f'{self.generate_problem_motion(grid_size, initial_pos, goal_pos, obstacles)}. \n Please reply only with the sequence of coordinates connected by -> in the optimal path and nothing else, not even explanation text.'
             case "pddl":
                 return f"""Below is the problem.pddl file in text: \n {self.generate_problem_pddl(grid_size, initial_pos, goal_pos, obstacles)} \n Your optimal plan should containing a sequence of actions of move-x and move-y that lead the robot to the goal. 
 Meanwhile there will be a sequence of change in "robot-x xi" and "robot-y yj" as the effect of each move on robot's position, every position can be transformed into a coordinate (i, j) where both i and j are integer value. So the final path can be transformed into a sequence of coordinates. 
