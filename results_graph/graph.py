@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import math
  
 # Parameters
 size = (10, 7)
@@ -41,15 +42,20 @@ x = np.arange(np.min(unique_sizes), np.max(unique_sizes) + 1)
 graph_count = len(unique_densities)
 
 # Create figure and suplots, with two columns
-figure, ax = plt.subplots(int(graph_count / 2), 2, sharey=True, figsize=size)
+cols = math.ceil(graph_count / 2)
+figure, ax = plt.subplots(2, cols, sharey=True, figsize=size)
 
 # Iterate over the different obstacle densities, and create a graph for each
-for i in range(graph_count):
-    obstacle_density = unique_densities[i]
-
-    row = int(i / 2)
-    col = i % 2
+for i in range(2 * cols):
+    row = int(i / cols)
+    col = i % cols
     subplot = ax[row][col]
+
+    if (i >= graph_count):
+        subplot.set_visible(False)
+        continue
+
+    obstacle_density = unique_densities[i]
 
     multiplier = 0
     for index, representation_type in enumerate(representation_types):
