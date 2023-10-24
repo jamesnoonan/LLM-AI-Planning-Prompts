@@ -197,7 +197,7 @@ where (x0, y0) is the initial square robot's left-lower corner coordinate and (x
             case "nl-casual":
                 return f'The grid is {grid_size[0]} wide and {grid_size[1]} tall. You are initially located at ({initial_pos}) and you need to get to ({goal_pos}). {self.get_obstacles(obstacles)}\n Please reply only with the sequence of coordinates that you visit and no explanations. Use -> to connect the coordinates.'
             case "nl-math":
-                return f'r may move no further than {int(grid_size[0]) - 1} on the x-axis and {int(grid_size[1]) - 1} on the y-axis. Let o={self.get_obstacles(obstacles)}. Given s=({initial_pos}) and g=({goal_pos}), what is the sequence of valid transitions needed to move r to g? Please reply only with this sequence and no explanations. Use -> to connect the coordinates.'
+                return f'r may move no further than {int(grid_size[0]) - 1} on the x-axis and {int(grid_size[1]) - 1} on the y-axis. Let o{self.get_obstacles(obstacles)}. Given s=({initial_pos}) and g=({goal_pos}), what is the sequence of valid transitions needed to move r to g? Please reply only with this sequence and no explanations. Use -> to connect the coordinates.'
             case "motion":
                 return f'{self.generate_problem_motion(grid_size, initial_pos, goal_pos, obstacles)}. \n Please reply only with the sequence of coordinates connected by -> in the optimal path and nothing else, not even explanation text.'
             case "pddl":
@@ -214,13 +214,13 @@ where each (i_a, j_a) correpond to the coordinate of robots after ath movement o
                 case "nl-casual":
                     return "There are no obstacles."
                 case "nl-math":
-                    return "[]"
+                    return " equal an empty list"
         elif (len(obstacles) == 1):
             match self.representation:
                 case "nl-casual":
                     return f'There is an obstacle at ({obstacles[0]}).'
                 case "nl-math":
-                    return f'[{obstacles[0]}]'
+                    return f'=[{obstacles[0]}]'
         
         match self.representation:
             case "nl-casual":
@@ -229,7 +229,7 @@ where each (i_a, j_a) correpond to the coordinate of robots after ath movement o
                     output += f'({obstacles[i]}), '
                 output += f'and ({obstacles[-1]}).'
             case "nl-math":
-                output = '['
+                output = '=['
                 for i in range(len(obstacles)):
                     output += f'({obstacles[i]}), '
                 output += ']'
