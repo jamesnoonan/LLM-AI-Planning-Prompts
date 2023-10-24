@@ -77,7 +77,7 @@ for i in range(2 * cols):
     # if ((row+1) == int(graph_count/2)):
     subplot.set_xlabel('Grid Size')
     if (col == 0):
-        subplot.set_ylabel('Accuracy (% correct)')
+        subplot.set_ylabel('Success Rate (% valid)')
 
     subplot.set_xticks(x + 1.5*bar_width, x)
 

@@ -1,26 +1,18 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
- 
+import matplotlib.lines as mlines
+
 # Parameters
-size = (10, 7)
-padding = 0.08
-top_spacing = 0.03 # for title
-bottom_spacing = 0.05 # for legend
-
-# Spacing between graphs
-w_padding_internal = 0.06
-h_padding_internal = 0.35
-
-bar_width = 0.2
+size = (8, 5)
+padding = 0.1
+top_spacing = 0.02 # for title
+bottom_spacing = 0.06 # for legend
 
 labels = ["NL Basic", "NL Intermediate", "NL Detailed", "PDDL"]
-colors = ["xkcd:blue", "xkcd:green", "xkcd:gold", "xkcd:red"]
+markers = ['o', '^', 's', 'P']
 
-
-# color_map_name = 'tab20b' # The colors of the series of data
-# cmap = plt.get_cmap(color_map_name)
-# colors = cmap(np.arange(len(representation_types)))
+cmap = plt.get_cmap('Blues')
 
 #
 # Generate graph
@@ -38,10 +30,27 @@ representation_types = df.copy().drop(columns=["size", "obstacle_density", "obst
 figure = plt.figure(figsize=size)
 
 for i, representation_type in enumerate(representation_types):
-    plt.scatter(obstacle_count, df[representation_type], label=labels[i], color=colors[i], marker='o')
+    plt.scatter(
+        obstacle_count,
+        df[representation_type] * 100,
+        label=labels[i],
+        c=df["size"],
+        cmap=cmap,
+        vmin=3,
+        vmax=11,
+        marker=markers[i])
 
-figure.suptitle('ChatGPT 3.5 Navigation Planning Performance', y=0.97, fontsize=16)
-figure.legend(labels=labels, loc='lower center', ncols=4)
+figure.suptitle("Effect of No. of Obstacles on Performance", y=0.95, fontsize=16)
+plt.xlabel("Number of Obstacles")
+plt.ylabel("LLM Success Rate (% valid)")
 
-plt.subplots_adjust(left=padding, right=1-(padding/2), bottom=padding + bottom_spacing, top=1-padding-top_spacing, wspace=w_padding_internal, hspace=h_padding_internal)
+leg = figure.legend(handles=[
+    mlines.Line2D([], [], color="cornflowerblue", marker=markers[0], ls='', label=labels[0]),
+    mlines.Line2D([], [], color="cornflowerblue", marker=markers[1], ls='', label=labels[1]),
+    mlines.Line2D([], [], color="cornflowerblue", marker=markers[2], ls='', label=labels[2]),
+    mlines.Line2D([], [], color="cornflowerblue", marker=markers[3], ls='', label=labels[3]),
+], loc='lower center', ncols=4)
+
+
+plt.subplots_adjust(left=padding, right=1-(padding/2), bottom=padding + bottom_spacing, top=1-padding-top_spacing)
 plt.savefig('scatter_graph.png')
