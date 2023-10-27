@@ -10,7 +10,8 @@ obstacle_count = []
 accuracy = []
 
 representation_types = df.copy().drop(columns=["size", "obstacle_density", "obstacle_count"]).columns
-for i, representation_type in enumerate(representation_types):
+# for representation_type in representation_types:
+for representation_type in ["pddl"]:
     grid_size.extend(df['size'])
     obstacle_count.extend(df['obstacle_count'])
     accuracy.extend(df[representation_type])
@@ -27,25 +28,29 @@ def correleation(x):
     else:
         print("There is no statistically significant relationship.")
 
+def partial_correleation(x, covar):
+    df = pd.DataFrame({
+        'grid_size': grid_size,
+        'accuracy': accuracy,
+        'obstacle_count': obstacle_count,
+    })
+
+    partial_corr = pg.partial_corr(data=df, x=x, y='accuracy', method='spearman', covar=covar)
+
+    print(partial_corr)
+    if partial_corr['p-val'].iloc[0] < 0.05:
+        print("There is a statistically significant relationship.")
+    else:
+        print("There is no statistically significant relationship.")
+
+# print("--- GRID SIZE ---")
+# correleation(grid_size)
+
+# print("\n--- OBSTACLE COUNT ---")
+# correleation(obstacle_count)
+
 print("--- GRID SIZE ---")
-correleation(grid_size)
+partial_correleation('grid_size', 'obstacle_count')
 
 print("\n--- OBSTACLE COUNT ---")
-correleation(obstacle_count)
-
-
-
-df = pd.DataFrame({
-    'grid_size': grid_size,
-    'accuracy': accuracy,
-    'obstacle_count': obstacle_count,
-})
-
-partial_corr = pg.partial_corr(data=df, x='grid_size', y='accuracy', method='spearman', covar='obstacle_count')
-# partial_corr = pg.partial_corr(data=df, x='obstacle_count', y='accuracy', covar='grid_size', method='spearman')
-print("\n--- Partial Correlation ---")
-print(partial_corr)
-if partial_corr['p-val'].iloc[0] < 0.05:
-    print("There is a statistically significant relationship.")
-else:
-    print("There is no statistically significant relationship.")
+partial_correleation('obstacle_count', 'grid_size')

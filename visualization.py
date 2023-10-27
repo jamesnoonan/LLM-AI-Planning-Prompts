@@ -103,6 +103,19 @@ def convert_string_to_tuple(input):
 
 # If script is run directly, generate examples for each density
 if __name__ == "__main__":
+    # case = {
+    #     "size": "4,4",
+    #     "initial": "3,1",
+    #     "goal": "2, 3",
+    #     "obstacles": ["0,0", "0,1", "1,1"],
+    # }
+    # generate_image(
+    #     convert_string_to_tuple(case.get("size")),
+    #     convert_string_to_tuple(case.get("initial")),
+    #     convert_string_to_tuple(case.get("goal")),
+    #     list(map(convert_string_to_tuple, case.get("obstacles"))),
+    #     None,
+    #     f"img-out/poster.png")
     size = 6
     for density in np.arange(0, 0.5, 0.1):
         obstacle_count = math.ceil(size * size * density)
